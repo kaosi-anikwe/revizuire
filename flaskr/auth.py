@@ -25,10 +25,10 @@ def login():
         return redirect(url_for("main.index"))
 
     else:
-        email = request.form.get("username")
-        username = request.form.get("password")
+        username = request.form.get("username")
+        password = request.form.get("password")
 
-        user = Users.query.filter(Users.username == username, Users.password == getHashed(email)).first()
+        user = Users.query.filter(Users.username == username, Users.password == getHashed(password)).first()
         if user:
             login_user(user)
             return redirect(url_for("main.index"))
