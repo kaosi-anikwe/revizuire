@@ -1,0 +1,4 @@
+__pycache__
+flaskr/templates/login.html
+flaskr/templates/error.html
+flaskr/templates/base.html
