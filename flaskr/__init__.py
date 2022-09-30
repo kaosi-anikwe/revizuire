@@ -8,6 +8,10 @@ from flaskr.models import setup_db, Users
 from dotenv import load_dotenv
 from flask_cors import CORS
 
+from flask_migrate import Migrate
+from flask_mysqldb import MySQL
+
+
 load_dotenv()
 
 def create_app(test_config=None):
@@ -43,3 +47,5 @@ def create_app(test_config=None):
     app.register_blueprint(main_blueprint)
 
     return app
+
+   
