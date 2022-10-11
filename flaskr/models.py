@@ -8,6 +8,11 @@ from flask_login import UserMixin
 from dotenv import load_dotenv
 from flask_migrate import Migrate
 
+from flask_migrate import Migrate
+
+
+db = SQLAlchemy() 
+
 # get credentials from .env file
 load_dotenv()
 
@@ -19,7 +24,10 @@ database_path = "mysql://{}:{}@{}/{}".format(
     database_username, database_password, host, database_name
 )
 
-db = SQLAlchemy()
+
+
+
+
 
 """
 setup_db(app)
@@ -33,7 +41,8 @@ def setup_db(app, database_path=database_path):
     db.app = app
     migrate = Migrate(app, db)
     db.init_app(app)
-    db.create_all()
+    migrate.init_app(app, db)
+    # db.create_all()
 
     """
     Models
