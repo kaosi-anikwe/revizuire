@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship, backref
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from dotenv import load_dotenv
+from flask_migrate import Migrate
 
 # get credentials from .env file
 load_dotenv()
@@ -30,6 +31,7 @@ def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
+    migrate = Migrate(app, db)
     db.init_app(app)
     db.create_all()
 
@@ -42,12 +44,19 @@ class Users(UserMixin, db.Model):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False)
     username = Column(String(50), nullable=False)
     password = Column(String(500), nullable=False)
     is_admin = Column(Boolean, nullable=False, default=False)
+    number_of_posts = Column(Integer)
+    number_of_likes = Column(Integer)
+    number_of_dislikes = Column(Integer)
 
-    def __init__(self, username, email, password):
+    def __init__(self, first_name, last_name, username, email, password):
+        self.first_name = first_name
+        self.last_name = last_name
         self.username = username
         self.email = email
         self.password = password
@@ -61,19 +70,6 @@ class Users(UserMixin, db.Model):
         db.session.commit()
 
     def format(self):
-        return {"id": self.id, "username": self.username, "email": self.email}
+        return {"id": self.id, "first_name": self.first_name, "last_name": self.last_name, "username": self.username, "email": self.email}
 
-
-# Other tables------------
-
-# Needs to be discussed
-# What data exactly are we storing
-# 
-# posts - divided into paragraphs 
-# likes
-# shares 
-# views
-# comments
-# ...etc 
-# 
-# I will prepare a table of what I think is neccessary and show you so you can approve
+# My apologies guys, this is what I have so far
