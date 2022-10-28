@@ -120,7 +120,7 @@ class Post(db.Model):
         return {
             "Title": self.title,
             "Text": self.text,
-            "Author": User.username
+            "Author": self.user_id
         }
 
 
@@ -167,5 +167,5 @@ class Comment(db.Model):
     def format(self):
         return {
             "Comment": self.text,
-            "Author": User.id
+            "Author": self.user_id
         }
