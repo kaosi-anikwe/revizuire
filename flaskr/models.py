@@ -13,7 +13,7 @@ from flask_migrate import Migrate
 from flask_migrate import Migrate
 
 
-db = SQLAlchemy() 
+db = SQLAlchemy()
 
 # get credentials from .env file
 load_dotenv()
@@ -25,10 +25,6 @@ host = os.getenv("HOST")
 database_path = "mysql://{}:{}@{}/{}".format(
     database_username, database_password, host, database_name
 )
-
-
-
-
 
 
 """
@@ -65,8 +61,8 @@ class User(UserMixin, db.Model):
     number_of_likes = Column(Integer)
     number_of_dislikes = Column(Integer)
     posts = relationship('Post', secondary='posts', backref=db.backref(
-                                                        'users', lazy=True
-                                                            ))
+        'users', lazy=True
+    ))
 
     def __init__(self, first_name, last_name, username, email, password):
         self.first_name = first_name
@@ -85,12 +81,13 @@ class User(UserMixin, db.Model):
 
     def format(self):
         return {
-            "id": self.id, 
-            "first_name": self.first_name, 
-            "last_name": self.last_name, 
-            "username": self.username, 
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "username": self.username,
             "email": self.email
         }
+
 
 class Post(db.Model):
     __tablename__ = "posts"
@@ -101,10 +98,10 @@ class Post(db.Model):
     user_id = Column(ForeignKey('users.id'), nullable=False)
     datetime = Column(DateTime(timezone=True), server_default=func.now())
     number_of_likes = Column(Integer)
-    number_of_comments = Column(Integer)    
-    number_of_views = Column(Integer)    
+    number_of_comments = Column(Integer)
+    number_of_views = Column(Integer)
     number_of_clicks = Column(Integer)
-    category = Column(String(50))   
+    category = Column(String(50))
 
     def __init__(self, title, text, user_id):
         self.title = title
@@ -114,17 +111,18 @@ class Post(db.Model):
     def insert(self):
         db.session.add(self)
         db.session.commit()
-    
+
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
     def format(self):
         return {
-            "Title" :self.title,
-            "Text" : self.text,
-            "Author" : User.username
+            "Title": self.title,
+            "Text": self.text,
+            "Author": User.username
         }
+
 
 class View(db.Model):
     __tablename__ = "views"
@@ -135,10 +133,14 @@ class View(db.Model):
 
 
 class Click(db.Model):
-    pass
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+
 
 class Like(db.Model):
-    pass
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+
 
 class Comment(db.Model):
     __tablename__ = "comments"
@@ -153,17 +155,17 @@ class Comment(db.Model):
     def __init__(self, text, user_id):
         self.text = text
         self.user_id = user_id
-    
+
     def insert(self):
         db.session.add(self)
         db.session.commit()
-    
+
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-    
+
     def format(self):
         return {
-            "Comment" : self.text,
-            "Author" : User.id
+            "Comment": self.text,
+            "Author": User.id
         }
