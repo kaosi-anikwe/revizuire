@@ -26,7 +26,7 @@ main = Blueprint("main", __name__)
 @main.route("/home")
 @login_required
 def index():
-    message = "Hello" + current_user.username + " !"
+    message = "Hello " + current_user.username + " !"
     return render_template("index.html", message=message)
 
 
