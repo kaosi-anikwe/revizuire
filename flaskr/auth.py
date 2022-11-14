@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, request, redirect, url_for, render_template
-from flaskr.models import db, Users
+from flaskr.models import db, User
 from flask_login import login_user, login_required, logout_user, current_user
 import hashlib
 
@@ -28,7 +28,7 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        user = Users.query.filter(Users.username == username, Users.password == getHashed(password)).first()
+        user = User.query.filter(User.username == username, User.password == getHashed(password)).first()
         if user:
             login_user(user)
             return redirect(url_for("main.index"))
