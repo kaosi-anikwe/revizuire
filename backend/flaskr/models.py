@@ -10,7 +10,6 @@ from flask_login import UserMixin
 from dotenv import load_dotenv
 from flask_migrate import Migrate
 
-from flask_migrate import Migrate
 
 
 db = SQLAlchemy()
@@ -20,9 +19,10 @@ load_dotenv()
 
 database_name = os.getenv("DATABASE_NAME")
 database_username = os.getenv("DATABASE_USERNAME")
+database_password = os.getenv("DATABASE_PASSWORD")
 host = os.getenv("HOST")
-database_path = "mysql://{}:@{}/{}".format(
-    database_username, host, database_name
+database_path = "mysql://{}:{}@{}/{}".format(
+    database_username, database_password, host, database_name
 )
 
 
@@ -46,7 +46,7 @@ def setup_db(app, database_path=database_path):
     """
 
 
-class User(UserMixin, db.Model):
+class Users(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
@@ -59,7 +59,9 @@ class User(UserMixin, db.Model):
     number_of_posts = Column(Integer)
     number_of_likes = Column(Integer)
     number_of_dislikes = Column(Integer)
-    posts = db.relationship('Post', backref='users', lazy=True)
+    posts = relationship('Post', secondary='posts', backref=db.backref(
+        'users', lazy=True
+    ))
 
     def __init__(self, first_name, last_name, username, email, password):
         self.first_name = first_name
@@ -82,8 +84,7 @@ class User(UserMixin, db.Model):
             "first_name": self.first_name,
             "last_name": self.last_name,
             "username": self.username,
-            "email": self.email,
-            "is_admin?" : self.is_admin
+            "email": self.email
         }
 
 
@@ -93,7 +94,7 @@ class Post(db.Model):
     id = Column(Integer, primary_key=True)
     title = Column(String(200))
     text = Column(String(2048))
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(ForeignKey('users.id'), nullable=False)
     datetime = Column(DateTime(timezone=True), server_default=func.now())
     number_of_likes = Column(Integer)
     number_of_comments = Column(Integer)
@@ -130,20 +131,14 @@ class View(db.Model):
     post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
 
 
-class Click(db.Model):
-    __tablename__ = "clicks"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+# class Click(db.Model):
+#     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+#     post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
 
 
-class Like(db.Model):
-    __tablename__ = "likes"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+# class Like(db.Model):
+#     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+#     post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
 
 
 class Comment(db.Model):

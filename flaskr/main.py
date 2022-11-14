@@ -1,4 +1,4 @@
-from crypt import methods
+#from crypt import methods
 import imp
 from io import BytesIO
 import os
@@ -29,6 +29,101 @@ def index():
     message = "Hello " + current_user.username + " !"
     return render_template("index.html", message=message)
 
+@main.route("/users", methods=['GET'])
+def view_users():
+        try:
+            users = User.query.all()
+
+            if not users:
+                abort(404)
+
+            data = []
+            for user in users:
+                data.append({
+                    'id': user.id,
+                    'name': user.first_name + " " + user.last_name,
+                    'username' : user.username
+                })
+
+            return jsonify({
+                "success": True,
+                "data": data
+            })
+
+        except Exception as e:
+            err = e
+            print("Err -> ", err)
+            abort(404)
+
+@main.route("/users/<int:user_id>", methods=['GET'])
+def view_user(user_id):
+        try:
+            user = User.query.get(user_id)
+
+            if not user:
+                abort(404)            
+
+            return jsonify({
+                "success": True,
+                "data": [{
+                    "data" : user.format()
+                }]
+            })
+
+        except Exception as e:
+            err = e
+            print("Err -> ", err)
+            abort(404)
+
+
+@main.route("/posts", methods=['GET', 'POST'])
+def view_posts():
+    if request.method == 'GET':
+        try:
+            posts = Post.query.all()
+
+            if not posts:
+                abort(404)
+
+            data = []
+            for post in posts:
+                data.append({
+                    'id': post.id,
+                    'name': post.title
+                })
+
+            return jsonify({
+                "success": True,
+                "data": data
+            })
+
+        except Exception as e:
+            err = e
+            print("Err -> ", err)
+            abort(404)
+    else:
+        pass
+
+
+@main.route("/posts/<int:id>", methods=['GET'])
+def view_post(post_id):
+    try:
+        post = Post.query.get(post_id)
+
+        if not post:
+            abort(404)
+
+        return jsonify({
+            "success": True,
+            "data": [{
+                "details" : post.format
+            }]
+        })
+    except Exception as e:
+        err = e
+        print("Err -> ", err)
+        abort(404)
+
 
 # Error handlers----------------------------
 
@@ -39,7 +134,7 @@ def bad_request(error):
 
 @main.errorhandler(404)
 def not_found(error):
-    return render_template("error.html")
+    return "There is no data to see here!"
 
 
 @main.errorhandler(500)
