@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from pickletools import read_uint1
 from flask import Flask
 from flask_login import LoginManager
-from flaskr.models import setup_db, Users
+from flaskr.models import setup_db, User
 from dotenv import load_dotenv
 from flask_cors import CORS
 
@@ -26,7 +26,7 @@ def create_app(test_config=None):
 
     @login_manager.user_loader
     def load_user(user_id):
-        return Users.query.get(int(user_id))
+        return User.query.get(int(user_id))
 
     @app.after_request
     def after_request(response):
