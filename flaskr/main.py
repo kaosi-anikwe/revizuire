@@ -27,7 +27,8 @@ main = Blueprint("main", __name__)
 @login_required
 def index():
     message = "Hello " + current_user.username + " !"
-    return render_template("index.html", message=message)
+    fav_author = User.query.filter().all()
+    return render_template("index.html", message=message, fav_author=fav_author)
 
 @main.route("/users", methods=['GET'])
 def view_users():
@@ -39,11 +40,7 @@ def view_users():
 
             data = []
             for user in users:
-                data.append({
-                    'id': user.id,
-                    'name': user.first_name + " " + user.last_name,
-                    'username' : user.username
-                })
+                data.append(user.format())
 
             return jsonify({
                 "success": True,
@@ -104,7 +101,6 @@ def view_posts():
     else:
         pass
 
-
 @main.route("/posts/<int:id>", methods=['GET'])
 def view_post(post_id):
     try:
@@ -116,7 +112,7 @@ def view_post(post_id):
         return jsonify({
             "success": True,
             "data": [{
-                "details" : post.format
+                "details" : post.format()
             }]
         })
     except Exception as e:
